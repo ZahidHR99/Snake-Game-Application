@@ -1,0 +1,157 @@
+<html>
+<head>
+    <title>Snake Game</title>
+</head>
+<style>
+    .button{
+        background-color:#ff4500;
+        width: 267px;
+        height: 50;
+        margin: auto;
+        font-size: 30px;
+        color: white;
+    }
+</style>
+<body>
+    <div style="width: 888px; margin: auto;">
+        <canvas id="myCanvas" width="800" height="500" style="background: black;  border: 5px solid #ff4500;"></canvas>
+        <button type="button" class="button" onclick="StartGame()">Start Game</button>
+        <button type="button" class="button" onclick="BreakGame()">Break</button>
+        <a href="index.html"><button type="button" class="button">End Game</button></a>
+        <!-- <input type="range" id="speedRange" min="1" max="1000" value="150">
+        <span id="demo"></span> -->
+    </div>
+    
+    <script>
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        var score = 0;
+        var dir, score, balls, food, speed;
+        var speed = 150;
+        
+        function StartGame(){
+            new Audio("audio.mp3").play();
+            start();
+        }
+        
+        function BreakGame(){
+            alert("Break Game , Your Score is : "+score);
+        }
+        
+        function start(){
+            
+            function init(){
+            dir   = 'right';
+            score = 0;
+            balls = [
+                {x:20, y:40},
+                {x:40, y:40},
+                {x:60, y:40},
+                {x:80, y:40},
+                {x:100, y:40}
+            ];
+          createFood(); 
+        }
+
+        function createFood(){
+            food = {x: Math.floor(Math.random() * 39 ), y: Math.floor(Math.random() * 24)};
+        }
+         
+        init();
+        
+        document.addEventListener("keydown", function(e){
+            var keyCode = e.keyCode;
+            if(keyCode == 37 && dir != 'right'){
+                dir = 'left';
+            }
+            if(keyCode == 38 && dir != 'down'){
+                dir = 'up';
+            }
+            if(keyCode == 39 && dir != 'left'){
+                dir = 'right';
+            }
+            if(keyCode == 40 && dir != 'up'){
+                dir = 'down';
+            }
+        })
+        
+        function add(){
+            var lastBall = balls[balls.length-1];
+            if(dir == 'right'){
+               balls.push({x:lastBall.x +20, y:lastBall.y});
+            }
+            if(dir == 'down'){
+               balls.push({x:lastBall.x, y:lastBall.y +20});
+            }
+            if(dir == 'left'){
+               balls.push({x:lastBall.x -20, y:lastBall.y});
+            }
+            if(dir == 'up'){
+               balls.push({x:lastBall.x, y:lastBall.y -20});
+            }
+            
+            
+        }
+        
+        function animation(){
+            ctx.clearRect(0,0,888,555);
+            balls.shift();
+            add();
+            var lastBall = balls[balls.length-1];
+            if(lastBall.x == food.x*20 && lastBall.y == food.y*20){
+               score += 5;
+               add();
+               createFood();
+            }
+            
+            ctx.fillStyle = "#ff4500";
+            
+            for(var i=0; i<balls.length; i++){
+                ball = balls[i];
+                if(i == balls.length-1){
+                   ctx.fillStyle = "red";
+                }else{
+                   ctx.fillStyle = "green";
+                }
+                   
+                if(ball.x > 780){
+                     ball.x = 0;
+    //                    alert("Game Over , Your Score is : "+score);
+    //                    init();
+                }
+                if(ball.x < 0){
+                    ball.x = 780;
+    //                    alert("Game Over , Your Score is : "+score);
+    //                    init();
+                }
+                if(ball.y > 480){
+                    ball.y = 0;
+    //                    alert("Game Over , Your Score is : "+score);
+    //                    init();
+                }
+                if(ball.y < 0){
+                    ball.y = 480;
+    //                    alert("Game Over , Your Score is : "+score);
+    //                    init();
+                }
+                if(ball.x == lastBall.x && ball.y == lastBall.y && i < balls.length - 2){
+                   alert("Game Over , Your Score is : "+score);
+                   init();
+                }
+                if(score == 150){
+                    alert("WIN , Your Score is : "+score);
+                    init();
+                }
+                
+                ctx.fillRect(ball.x, ball.y, 19, 19);
+            }
+            
+            ctx.fillRect(food.x*20, food.y*20, 19, 19);
+            ctx.fillText("Score : " +score, 480, 480);
+        }
+        setInterval(animation, speed);
+        }
+        
+    </script>
+</body>
+</html>
